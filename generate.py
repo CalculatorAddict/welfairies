@@ -16,7 +16,7 @@ def normalize_part(s):
         return ""
     s = s.lower().strip()
     s = re.sub(r"[^\w\s]", "", s)
-    s = re.sub(r"\s+", " ", s)
+    s = re.sub(r"\s+", "", s)
     return s
 
 
@@ -110,8 +110,8 @@ def generate_pdf(csv_path, output_pdf):
     people = []
 
     for _, group in df.groupby("cluster"):
-        first_name = group[first_name_col].iloc[0]
-        last_name = group[last_name_col].iloc[0]
+        first_name = group[first_name_col].mode()[0]
+        last_name = group[last_name_col].mode()[0]
         display_name = format_name(f"{first_name} {last_name}".strip())
 
         notes = group[note_col].tolist()
