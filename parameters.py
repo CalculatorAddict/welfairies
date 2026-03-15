@@ -1,7 +1,7 @@
 # -------------------------
 # Parameters
 # -------------------------
-first_name_col = "What is the first name of the person you want to send the Welfairy to?"
-last_name_col = "What is the surname of the person you want to send the Welfairy to?"
-note_col = "What is your message for them?"
-snack_col = "What type of sweet do you want to give them?"
+FIRST_NAME_COL = "First name"
+LAST_NAME_COL = "Last Name"
+NOTE_COL = "Message"
+SNACK_COL = "Snack type"

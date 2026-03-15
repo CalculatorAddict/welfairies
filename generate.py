@@ -103,19 +103,19 @@ def generate_pdf(csv_path, output_pdf):
     df = pd.read_csv(csv_path)
 
     # cluster names
-    df[last_name_col] = df[last_name_col].str.strip()
-    df = df.sort_values(last_name_col)
-    df["cluster"] = cluster_names_df(df, first_name_col, last_name_col)
+    df[LAST_NAME_COL] = df[LAST_NAME_COL].str.strip()
+    df = df.sort_values(LAST_NAME_COL)
+    df["cluster"] = cluster_names_df(df, FIRST_NAME_COL, LAST_NAME_COL)
 
     people = []
 
     for _, group in df.groupby("cluster"):
-        first_name = group[first_name_col].mode()[0]
-        last_name = group[last_name_col].mode()[0]
+        first_name = group[FIRST_NAME_COL].mode()[0]
+        last_name = group[LAST_NAME_COL].mode()[0]
         display_name = format_name(f"{first_name} {last_name}".strip())
 
-        notes = group[note_col].tolist()
-        candy_counts = group[snack_col].value_counts().to_dict()
+        notes = group[NOTE_COL].tolist()
+        candy_counts = group[SNACK_COL].value_counts().to_dict()
 
         people.append({
             "name": display_name,
