@@ -1,8 +1,11 @@
+import io
+import math
 import pandas as pd
 
 import re
 from collections import defaultdict
 from jinja2 import Template
+from pypdf import PdfReader, PdfWriter
 from weasyprint import HTML
 from parameters import *
 from template import *
@@ -126,7 +129,25 @@ def generate_pdf(csv_path, output_pdf):
     template = Template(PAGE_TEMPLATE)
     html_content = template.render(people=people)
 
-    HTML(string=html_content).write_pdf(output_pdf)
+    buf = io.BytesIO()
+    HTML(string=html_content).write_pdf(buf)
+
+    buf.seek(0)
+    reader = PdfReader(buf)
+    writer = PdfWriter()
+
+    n = len(reader.pages)
+    s = math.ceil(n / 4)  # sheets needed
+    order = [pos * s + sheet 
+        for sheet in range(s) 
+        for pos in range(4) 
+        if pos * s + sheet < n]
+    
+    for i in order:
+        writer.add_page(reader.pages[i])
+
+    with open(output_pdf, "wb") as f:
+        writer.write(f)
 
 # -------------------------
 # Command-line entry
