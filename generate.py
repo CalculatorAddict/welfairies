@@ -102,7 +102,7 @@ def format_name(name: str) -> str:
 # Main PDF generation
 # -------------------------
 
-def generate_pdf(csv_path, output_pdf):
+def generate_pdf(csv_path, output_pdf, term_name, welsh_phrase):
     df = pd.read_csv(csv_path)
 
     # cluster names
@@ -118,16 +118,14 @@ def generate_pdf(csv_path, output_pdf):
         display_name = format_name(f"{first_name} {last_name}".strip())
 
         notes = group[NOTE_COL].tolist()
-        candy_counts = group[SNACK_COL].value_counts().to_dict()
 
         people.append({
             "name": display_name,
             "notes": notes,
-            "candy_counts": candy_counts
         })
     
     template = Template(PAGE_TEMPLATE)
-    html_content = template.render(people=people)
+    html_content = template.render(people=people, term_name=term_name, welsh_phrase=welsh_phrase)
 
     buf = io.BytesIO()
     HTML(string=html_content).write_pdf(buf)
@@ -156,8 +154,10 @@ def generate_pdf(csv_path, output_pdf):
 if __name__ == "__main__":
     import sys
 
-    if len(sys.argv) != 3:
-        print("Usage: python generate_pdf.py input.csv output.pdf")
+    if len(sys.argv) not in (3, 5):
+        print("Usage: python generate.py input.csv output.pdf [term_name welsh_phrase]")
         sys.exit(1)
 
-    generate_pdf(sys.argv[1], sys.argv[2])
+    term = sys.argv[3] if len(sys.argv) == 5 else TERM_NAME
+    welsh = sys.argv[4] if len(sys.argv) == 5 else WELSH_PHRASE
+    generate_pdf(sys.argv[1], sys.argv[2], term, welsh)

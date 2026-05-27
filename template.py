@@ -27,19 +27,14 @@ body {
     vertical-align: bottom;
 }
 
-.footer {
-    position: running(footer);
-    font-size: 12pt;
-    margin-top: 12px;
-    margin-bottom: 8px;
-    vertical-align: bottom;
-}
-
-@page {    
+@page {
     size: A6 landscape;
     margin: 1cm;
     @top-center {
         content: element(header);
+    }
+    @bottom-center {
+        content: element(footer);
     }
 }
 
@@ -72,11 +67,9 @@ body {
     font-size: 10pt;
 }
 
-.candy {
-    margin-top: 8px;
-    border-top: 1px solid #000;
-    padding-top: 5px;
-    font-size: 9pt;
+.footer {
+    position: running(footer);
+    font-size: 10pt;
     text-align: center;
 }
 
@@ -87,6 +80,8 @@ ul {
 </style>
 </head>
 <body>
+
+<div class="footer">{{ term_name }} &emsp;🏴󠁧󠁢󠁷󠁬󠁳󠁿&emsp; {{ welsh_phrase }}</div>
 
 {% for person in people %}
 <div class="person">
@@ -100,14 +95,6 @@ ul {
         <li><div class="note">{{ note }}</div></li>
     {% endfor %}
     </ul>
-
-    <div class="candy">
-        😋
-        {% for candy, count in person.candy_counts.items() %}
-            {{ candy }}: {{ count }} {% if loop.index< person.candy_counts.items() | length %} &emsp; {% endif %}
-        {% endfor %}
-        😋
-    </div>
 
 </div>
 {% endfor %}
