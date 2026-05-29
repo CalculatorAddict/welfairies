@@ -99,11 +99,40 @@ def format_name(name: str) -> str:
 
 
 # -------------------------
+# Preprocessing
+# -------------------------
+
+def preprocess_names(df):
+    has_first = FIRST_NAME_COL in df.columns
+    has_last = LAST_NAME_COL in df.columns
+    if not has_first or not has_last:
+        split = df[FULL_NAME_COL].str.strip().str.split(r"\s+", n=1, expand=True)
+        df = df.copy()
+        df[FIRST_NAME_COL] = split[0].fillna("")
+        df[LAST_NAME_COL] = split[1].fillna("")
+    return df
+
+
+def classify_snack(value):
+    if not isinstance(value, str):
+        return None
+    v = value.lower()
+    if any(w.lower() in v for w in CHOCOLATE_WORDS):
+        return "C"
+    if any(w.lower() in v for w in STARBURST_WORDS):
+        return "S"
+    return None
+
+
+# -------------------------
 # Main PDF generation
 # -------------------------
 
 def generate_pdf(csv_path, output_pdf, term_name, welsh_phrase):
     df = pd.read_csv(csv_path)
+
+    df = preprocess_names(df)
+    df["snack_label"] = df[SNACK_COL].apply(classify_snack)
 
     # cluster names
     df[LAST_NAME_COL] = df[LAST_NAME_COL].str.strip()
@@ -112,18 +141,25 @@ def generate_pdf(csv_path, output_pdf, term_name, welsh_phrase):
 
     people = []
 
-    for _, group in df.groupby("cluster"):
+    for _, group in df.groupby("cluster", sort=False):
         first_name = group[FIRST_NAME_COL].mode()[0]
         last_name = group[LAST_NAME_COL].mode()[0]
         display_name = format_name(f"{first_name} {last_name}".strip())
 
         notes = group[NOTE_COL].tolist()
+        snack_c = int((group["snack_label"] == "C").sum())
+        snack_s = int((group["snack_label"] == "S").sum())
 
         people.append({
             "name": display_name,
+            "last_name": last_name,
             "notes": notes,
+            "snack_c": snack_c,
+            "snack_s": snack_s,
         })
-    
+
+    people.sort(key=lambda p: normalize_part(p["last_name"]))
+
     template = Template(PAGE_TEMPLATE)
     html_content = template.render(people=people, term_name=term_name, welsh_phrase=welsh_phrase)
 

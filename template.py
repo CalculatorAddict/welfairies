@@ -67,6 +67,13 @@ body {
     font-size: 10pt;
 }
 
+.snack-count {
+    font-size: 10pt;
+    font-weight: normal;
+    margin-left: 8px;
+    color: #555;
+}
+
 .footer {
     position: running(footer);
     font-size: 10pt;
@@ -81,10 +88,12 @@ ul {
 </head>
 <body>
 
-<div class="footer">{{ term_name }} &emsp;🏴󠁧󠁢󠁷󠁬󠁳󠁿&emsp; {{ welsh_phrase }}</div>
-
 {% for person in people %}
 <div class="person">
+
+    <div class="footer">
+        {{ term_name }} &emsp;🏴󠁧󠁢󠁷󠁬󠁳󠁿&emsp; {{ welsh_phrase }} &emsp;🏴󠁧󠁢󠁷󠁬󠁳󠁿&emsp;{% if person.snack_c or person.snack_s %} {{ person.snack_c }}C; {{ person.snack_s }}S{% endif %}
+    </div>
 
     <div class="header">
         🧚 {{ person.name }} 🧚
